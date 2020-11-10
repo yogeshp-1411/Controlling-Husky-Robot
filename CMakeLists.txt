@@ -1,0 +1,27 @@
+cmake_minimum_required(VERSION 3.0.2)
+project(deepfield_task)
+
+find_package(catkin REQUIRED COMPONENTS
+  genmsg
+  roscpp
+  rospy
+  std_msgs
+  geometry_msgs
+)
+
+
+catkin_package(
+#  INCLUDE_DIRS include
+#  LIBRARIES deepfield_task
+#  CATKIN_DEPENDS genmsg roscpp rospy std_msgs
+#  DEPENDS system_lib
+)
+
+include_directories(
+ include
+  ${catkin_INCLUDE_DIRS}
+)
+
+add_executable(go_straight src/go_straight.cpp)
+target_link_libraries(go_straight ${catkin_LIBRARIES})
+
