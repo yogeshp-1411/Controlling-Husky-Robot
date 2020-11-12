@@ -7,6 +7,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   geometry_msgs
+  nav_msgs
 )
 
 
@@ -25,3 +26,5 @@ include_directories(
 add_executable(go_straight src/go_straight.cpp)
 target_link_libraries(go_straight ${catkin_LIBRARIES})
 
+add_executable(subscriber_odom src/subscriber_odom.cpp)
+target_link_libraries(subscriber_odom ${catkin_LIBRARIES})
