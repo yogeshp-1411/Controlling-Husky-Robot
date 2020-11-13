@@ -6,8 +6,9 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  geometry_msgs
+  geometry_msgs 
   nav_msgs
+  tf
 )
 
 
@@ -28,3 +29,7 @@ target_link_libraries(go_straight ${catkin_LIBRARIES})
 
 add_executable(subscriber_odom src/subscriber_odom.cpp)
 target_link_libraries(subscriber_odom ${catkin_LIBRARIES})
+
+add_executable(controlHusky src/controlHusky.cpp)
+target_link_libraries(controlHusky ${catkin_LIBRARIES})
+
