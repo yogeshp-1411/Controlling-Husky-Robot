@@ -3,11 +3,17 @@
 #include "nav_msgs/Odometry.h"
 #include "math.h"
 #include "tf/tf.h"
+#include "angles/angles.h"
+
+float current_x, current_y;
+double theta_degree;
+float goal_x = 5;
+float goal_y = 3;
 
 void callBack(const nav_msgs::Odometry::ConstPtr& msg)
 {
-	float x = msg->pose.pose.position.x;
-	float y = msg->pose.pose.position.y;
+	current_x = msg->pose.pose.position.x;
+	current_y = msg->pose.pose.position.y;
 	
 	//ROS_INFO("Position-> x: [%f], y: [%f], z: [%f]", msg->pose.pose.position.x, msg->pose.pose.position.y, msg->pose.pose.position.z);
 	//ROS_INFO("Orientation-> x: [%f], y: [%f], z: [%f], w: [%f]", msg->pose.pose.orientation.x, msg->pose.pose.orientation.y, msg->pose.pose.orientation.z, msg->pose.pose.orientation.w);
@@ -27,8 +33,10 @@ void callBack(const nav_msgs::Odometry::ConstPtr& msg)
 
 	//orientation.getRPY(roll, pitch, yaw);
 
-	double theta = tf::getYaw(q);
-	printf("%f \n", theta);
+	double theta_yaw = tf::getYaw(q);
+	theta_degree = angles::to_degrees(angles::normalize_angle_positive(theta_yaw));
+//	theta_degree += 90; 
+	//printf("%f %f\n", theta_yaw, theta_angle);
 }
 
 int main(int argc, char **argv)
@@ -41,19 +49,46 @@ int main(int argc, char **argv)
 
 	ros::Rate loop_rate(10);
 	
+	double goal_angle;
+	//double goal_angle_1, goal_angle_2;
 	while (ros::ok())
 	{
+		//double goal1 = (atan(goal_y/goal_x))*(180/3.14);
+		//goal_angle_1 =  angles::to_degrees(angles::normalize_angle_positive(goal1));
+		double goal = (atan(goal_y/goal_x));
+		goal_angle =  angles::to_degrees(angles::normalize_angle_positive(goal));
+		printf("Goal Angle: %f Current Angle: %f \n", goal_angle, (theta_degree));
+		
 		geometry_msgs::Twist motion;
-		
-		motion.linear.x = 0.2;
-		motion.linear.y = 0.0;
-		motion.linear.z = 0.0;
-		motion.angular.x = 0.0;
-		motion.angular.y = 0.0;		
-		motion.angular.z = 0.1;
-		
-		pub.publish(motion);
 
+		double diff = abs(theta_degree - goal_angle);
+//		printf("%f\n", diff);
+
+		if (diff != 0)
+		{
+//		printf("%f \n", theta_degree);
+		//align the robot
+		
+			motion.linear.x = 0.0;
+			motion.linear.y = 0.0;
+			motion.linear.z = 0.0;
+			motion.angular.x = 0.0;
+			motion.angular.y = 0.0;		
+			motion.angular.z = 0.1;
+		
+			pub.publish(motion);
+		}
+		else
+		{//go straight
+			motion.linear.x = 0.2;
+			motion.linear.y = 0.0;
+			motion.linear.z = 0.0;
+			motion.angular.x = 0.0;
+			motion.angular.y = 0.0;		
+			motion.angular.z = 0.0;
+		
+			pub.publish(motion);		
+		}
 		ros::spinOnce();
 		loop_rate.sleep();
 	}	
