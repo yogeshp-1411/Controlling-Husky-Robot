@@ -53,41 +53,46 @@ int main(int argc, char **argv)
 	//double goal_angle_1, goal_angle_2;
 	while (ros::ok())
 	{
-		//double goal1 = (atan(goal_y/goal_x))*(180/3.14);
-		//goal_angle_1 =  angles::to_degrees(angles::normalize_angle_positive(goal1));
-		double goal = (atan(goal_y/goal_x));
-		goal_angle =  angles::to_degrees(angles::normalize_angle_positive(goal));
-		printf("Goal Angle: %f Current Angle: %f \n", goal_angle, (theta_degree));
-		
-		geometry_msgs::Twist motion;
+		printf("Diff_x: %f 	Diff_y: %f\n", (goal_x - current_x), (goal_y - current_y));
 
-		double diff = abs(theta_degree - goal_angle);
-//		printf("%f\n", diff);
-
-		if (diff != 0)
+		//while( (((goal_x - current_x) > 0.3) || ((goal_x - current_x) < -0.3)) && (((goal_y - current_y) >0.3) || ((goal_y - current_y) < -0.3)) )
+		//while((goal_x - current_x)>0 && (goal_y - current_y)>0)
+		if((goal_x - current_x)>0 && (goal_y - current_y)>0)
 		{
-//		printf("%f \n", theta_degree);
-		//align the robot
+			double goal = (atan(goal_y/goal_x));
+			goal_angle =  angles::to_degrees(angles::normalize_angle_positive(goal));
+			//printf("Goal Angle: %f Current Angle: %f \n", goal_angle, (theta_degree));
 		
-			motion.linear.x = 0.0;
-			motion.linear.y = 0.0;
-			motion.linear.z = 0.0;
-			motion.angular.x = 0.0;
-			motion.angular.y = 0.0;		
-			motion.angular.z = 0.1;
+			geometry_msgs::Twist motion;
+
+			double diff = abs(theta_degree - goal_angle);
+	//		printf("%f\n", diff);
+
+			if (diff != 0)
+			{
+	//		printf("%f \n", theta_degree);
+			//align the robot
 		
-			pub.publish(motion);
-		}
-		else
-		{//go straight
-			motion.linear.x = 0.2;
-			motion.linear.y = 0.0;
-			motion.linear.z = 0.0;
-			motion.angular.x = 0.0;
-			motion.angular.y = 0.0;		
-			motion.angular.z = 0.0;
+				motion.linear.x = 0.0;
+				motion.linear.y = 0.0;
+				motion.linear.z = 0.0;
+				motion.angular.x = 0.0;
+				motion.angular.y = 0.0;		
+				motion.angular.z = 0.1;
 		
-			pub.publish(motion);		
+				pub.publish(motion);
+			}
+			else
+			{//go straight
+				motion.linear.x = 0.2;
+				motion.linear.y = 0.0;
+				motion.linear.z = 0.0;
+				motion.angular.x = 0.0;
+				motion.angular.y = 0.0;		
+				motion.angular.z = 0.0;
+		
+				pub.publish(motion);		
+			}
 		}
 		ros::spinOnce();
 		loop_rate.sleep();
