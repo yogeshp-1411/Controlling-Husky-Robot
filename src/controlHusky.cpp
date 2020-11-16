@@ -7,7 +7,7 @@
 
 float current_x, current_y;
 double theta_degree;
-float goal_x = 1;
+float goal_x = 5;
 float goal_y = 1;
 
 void callBack(const nav_msgs::Odometry::ConstPtr& msg)
@@ -41,17 +41,26 @@ int main(int argc, char **argv)
 		geometry_msgs::Twist motion;
 
 		printf("Diff_x: %f 	Diff_y: %f\n", round(goal_x - current_x), round(goal_y - current_y));
+		
+		if(round(goal_x - current_x) ==0 && round(goal_y - current_y) ==0)
+		{//once reached the destination, align the robot in x direction
+			if(round(theta_degree) != 0.00)
+			{
+				motion.angular.z = 0.1;
+				pub.publish(motion);
+			}
+			else
+			{
+				ros::shutdown();
+			}
 
-		//while( (((goal_x - current_x) > 0.3) || ((goal_x - current_x) < -0.3)) && (((goal_y - current_y) >0.3) || ((goal_y - current_y) < -0.3)) )
-		//while((goal_x - current_x)>0 && (goal_y - current_y)>0)
-		if(round(goal_x - current_x)!=0 && round(goal_y - current_y)!=0)
+		}
+		else if((round(goal_x - current_x) !=0) || (round(goal_y - current_y)!=0))
 		{
 			double goal = (atan(goal_y/goal_x));
-//			goal_angle =  angles::to_degrees(angles::normalize_angle_positive(goal));
-			goal_angle =  angles::to_degrees(angles::normalize_angle(goal));
+			goal_angle =  angles::to_degrees(angles::normalize_angle_positive(goal));
+			//goal_angle =  angles::to_degrees(angles::normalize_angle(goal));
 			printf("Goal Angle: %f Current Angle: %f \n", goal_angle, (theta_degree));
-		
-			//geometry_msgs::Twist motion;
 
 			double diff = abs(theta_degree - goal_angle);
 			if (diff != 0)
@@ -79,20 +88,7 @@ int main(int argc, char **argv)
 				pub.publish(motion);		
 			}
 		}
-		else
-		{//once reached the destination, align the robot in x direction
-			//printf("Stopping angle: %f\n", round(theta_degree));
-			if(round(theta_degree) != 0.00)
-			{
-				motion.angular.z = 0.1;
-				pub.publish(motion);
-			}
-			else
-			{
-				ros::shutdown();
-			}
-
-		}
+		
 		ros::spinOnce();
 		loop_rate.sleep();
 	}	
