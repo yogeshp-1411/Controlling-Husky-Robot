@@ -3,7 +3,7 @@ This repository is created to maintain a code in C++ language to control the mot
 
 # How to install the node?
 1) Make sure you have "husky_simulator" installed on your ROS. Follow ROS tutorial for CPP at http://wiki.ros.org/husky_gazebo/Tutorials/Simulating%20Husky
-2) Clone the main repository into the src directory of your catkin workspace.
+2) Clone the main branch of this repository into the src directory of your catkin workspace.
 3) Make the controlHusky.cpp file executable by executing following commands in your terminal. (Pre-requisite: Make sure your ROS environment is running)
   -> cd ~/catkin_ws
   -> cd src/deepfield_task/src/
