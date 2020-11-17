@@ -4,7 +4,7 @@ project(deepfield_task)
 find_package(catkin REQUIRED COMPONENTS
   genmsg
   roscpp
-  rospy
+  #rospy
   std_msgs
   geometry_msgs 
   nav_msgs
