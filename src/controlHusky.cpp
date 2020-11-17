@@ -17,15 +17,12 @@ void callBack(const nav_msgs::Odometry::ConstPtr& msg)
 	current_x = (msg->pose.pose.position.x);
 	current_y = (msg->pose.pose.position.y);
 
-	//printf("In the callback Current_x: %f	Current_y: %f\n", current_x, current_y);
-
 	tf::Quaternion q( msg->pose.pose.orientation.x,
 		 	msg->pose.pose.orientation.y,
 			msg->pose.pose.orientation.z,
 			msg->pose.pose.orientation.w);
 
 	double theta_yaw = tf::getYaw(q);
-	//theta_degree = angles::to_degrees(angles::normalize_angle_positive(theta_yaw));
 	theta_degree = round(angles::to_degrees(angles::normalize_angle_positive(theta_yaw)));
 }
 
@@ -34,7 +31,7 @@ void callBack(const nav_msgs::Odometry::ConstPtr& msg)
 // false :-> turn anticlockwise
 void decideTurnDirection(double goal_angle, double current_angle)
 {
-	if((goal_angle - current_angle ) > -120 && (goal_angle - current_angle ) <= 0)
+	if((goal_angle - current_angle ) > -180 && (goal_angle - current_angle ) <= 0)
 		clock_wise = true;
 	else
 		clock_wise = false;
@@ -64,13 +61,15 @@ int main(int argc, char **argv)
 		printf("Diff_x: %f 	Diff_y: %f\n", round(goal_x - current_x), round(goal_y - current_y));
 		printf("Current_x: %f	Current_y: %f\n", current_x, current_y);
 
-		//if( (((goal_x - current_x) ==0)&& ((goal_y - current_y) ==0)) || ((round(goal_x - current_x) == 0)&&((goal_y - current_y) ==0))||(((goal_x - current_x) == 0) &&(round(goal_y - current_y) ==0)))
 		if ( (round(goal_x - current_x) == 0) && (round(goal_y - current_y) == 0) )
 		{//once reached the destination, align the robot in x direction
 			printf("STOPPING :::: Current Angle %f\n", theta_degree);
-			if(round(theta_degree) != 0.00)
+			if(theta_degree != 0.00)
 			{
-				motion.angular.z = 0.1;
+				if(theta_degree <= 180 && theta_degree > 0 )
+					motion.angular.z = -0.1;
+				else
+					motion.angular.z = 0.1;
 				pub.publish(motion);
 			}
 			else
@@ -79,7 +78,7 @@ int main(int argc, char **argv)
 			}
 
 		}
-		else //if((round(goal_x - current_x) !=0) || (round(goal_y - current_y)!=0))
+		else 
 		{//reach the destination
 			if(((current_x)<= (goal_x)) && ((current_y) <= (goal_y))) //Case1
 			{
@@ -98,8 +97,7 @@ int main(int argc, char **argv)
 				goal_angle =  abs(angles::to_degrees(angles::normalize_angle(goal)))+90;
 				//clock_wise = false;									
 			}
-			//else if(( ((current_x >= (goal_x)) && ((current_y) >= (goal_y))) || ( ((current_x >= (goal_x)) && ((current_y) >= (goal_y))))
-			if( ((current_x >= (goal_x)) && ((current_y) >= (goal_y))) || ( ((round(current_x) >= (goal_x)) && ((current_y) >= (goal_y)))) )
+			if( ((current_x >= (goal_x)) && ((current_y) >= (goal_y)))) //|| ( ((round(current_x) >= (goal_x)) && ((current_y) >= (goal_y)))) )
 			{
 				printf("3rd Case\n");
 				goal = (atan((goal_y-current_y)/(goal_x-current_x)));
@@ -107,7 +105,6 @@ int main(int argc, char **argv)
 				//printf("goal angle normalized %f\n", angles::to_degrees(angles::normalize_angle(goal)));
 				goal_angle =  abs(angles::to_degrees(angles::normalize_angle(goal)));
 				goal_angle = goal_angle + 180.00; 
-//printf("GOAL ANGLE %f\n", goal_angle);
 				//clock_wise = false;							
 			}
 			else if((current_x < goal_x) && (current_y > goal_y))
@@ -123,11 +120,6 @@ int main(int argc, char **argv)
 			
 			decideTurnDirection(goal_angle, theta_degree);
 
-			//goal = (atan(goal_y/goal_x));
-			//goal = (atan((goal_y-current_y)/(goal_x-current_x)));
-
-			//goal_angle =  angles::to_degrees(angles::normalize_angle_positive(goal)); //was used
-			//goal_angle =  angles::to_degrees(angles::normalize_angle(goal));
 			printf("Goal Angle: %f Current Angle: %f \n", goal_angle, (theta_degree));
 
 			diff = abs(round(goal_angle) - round(theta_degree));
