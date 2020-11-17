@@ -6,7 +6,7 @@ The "controlHusky" node controls the motion of the Husky robot. Once the user fe
 
 # How to install the node?
 1) Make sure you have "husky_simulator" installed on your ROS. Follow ROS tutorial for CPP at http://wiki.ros.org/husky_gazebo/Tutorials/Simulating%20Husky
-2) Clone the main branch of this repository into the src directory of your catkin workspace.
+2) Create a folder with name "deepfield_task" in the src directory of your catkin workspace. This folder represents as package name. Clone the main branch of this repository into the newly created "deepfield_task" directory of your catkin workspace. If you would like to change the name of the package then respective changes must be done in CMakeLists.txt and package.xml files.
 3) Make the controlHusky.cpp file executable by executing following commands in your terminal. (Pre-requisite: Make sure your ROS environment is running)
   -> cd ~/catkin_ws
   -> cd src/deepfield_task/src/
