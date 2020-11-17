@@ -1,6 +1,9 @@
 # Controlling-Husky-Robot
 This repository is created to maintain a code in C++ language to control the motion of Husky Robot using ROS (Robot Operating System)
 
+# About the node
+The "controlHusky" node controls the motion of the Husky robot. Once the user feeds in the destination co-ordinates, the robot finds its path to it. The robot comes to a complete halt when it it within 0.5 meter proximity of the destination. The stopping position is always directed in the X directional axis. 
+
 # How to install the node?
 1) Make sure you have "husky_simulator" installed on your ROS. Follow ROS tutorial for CPP at http://wiki.ros.org/husky_gazebo/Tutorials/Simulating%20Husky
 2) Clone the main branch of this repository into the src directory of your catkin workspace.
